@@ -2,12 +2,18 @@ import os
 import click
 import string
 import csv
+from tqdm import tqdm 
+
+import spacy
+nlp = spacy.load('en_core_web_lg')
 
 MASK = '<MASK>'
 IGNORE_CHARS = '0123456789' + string.punctuation
+ENTITIES_TO_MASK = ['PERSON']
 
 def mask_entities(text, mask):
-    return text
+    doc = nlp(text)
+    return " ".join([mask if t.ent_type_ and t.ent_type_ in ENTITIES_TO_MASK else t.text for t in doc])
 
 def preprocess_file(filename, out_file, mask_ner, dialect, period, author):
     book_title = filename.split('-')[-1].strip().replace('.txt','')
@@ -20,7 +26,7 @@ def preprocess_file(filename, out_file, mask_ner, dialect, period, author):
     print(f'{book_title}: {len(paragraphs)} paragraphs')
     with open(out_file, 'a', newline='') as f:
         writer = csv.writer(f, delimiter='\t', lineterminator='\n')
-        for par in paragraphs:
+        for par in tqdm(paragraphs):
             par = ' '.join(par.replace('\n', ' ').split())
             if mask_ner:
                 par = mask_entities(par, MASK)
