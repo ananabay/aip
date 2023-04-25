@@ -1,5 +1,6 @@
 import sys, os
 import streamlit as st
+from PIL import Image
 
 # dir_path = os.path.dirname(os.path.realpath(__file__))
 # sys.path.append(os.path.sep.join(dir_path.split(os.path.sep)[:-1]))
@@ -22,7 +23,6 @@ def update_displayed():
         "AND THE DATE: !!!\n\n\n" +\
         "AND THE DIALECT"
 
-
 def update_text_from_file():
     if st.session_state['uploaded_file']:
         st.session_state['uploaded_text'] = st.session_state['uploaded_file'].getvalue().decode()
@@ -31,7 +31,15 @@ def update_text_from_file():
 def update_text_from_input():
     st.session_state['text'] = st.session_state['input_text']
 
-st.header('AIP')
+colH, colIm = st.columns([8,5])
+
+with colH:
+    st.header('Author Identification Project\n(AIP)')
+
+with colIm:
+    image = Image.open('monkeys.png')
+    st.image(image, caption='Our ananabay team members!')
+
 
 col1, col2 = st.columns([8, 6])
 
