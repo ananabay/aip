@@ -48,7 +48,7 @@ def get_device(no_mps=False):
 
 @click.command()
 @click.option("--batch-size", default=64, help='batch size (default 32)')
-@click.option("--max-epochs", default=10, help='number of epochs')
+@click.option("--max-epochs", default=1, help='number of epochs')
 @click.option("--predict-level", default='author', type=click.Choice(["author", "time_period", "dialect"]), help='the label to predict')
 @click.option("--limit", default=None, help='max # of examples to train on')
 @click.option("--train-file", type=click.Path(readable=True), required=True, help='path for training .tsv file')
@@ -83,6 +83,8 @@ def main(batch_size, max_epochs, predict_level, limit,
         X_train, y_train, label_dict = get_X_y_from_file(train_file, limit=limit, label_column=column)
         num_training_steps = max_epochs * (len(X_train) // batch_size + 1)
 
+        label_dict_inv = dict([(y,x) for (x,y) in label_dict.items()])
+
         def lr_schedule(current_step):
             factor = float(num_training_steps - current_step) / float(max(1, num_training_steps))
             assert factor > 0
@@ -111,6 +113,11 @@ def main(batch_size, max_epochs, predict_level, limit,
 
     # train the model
     net.fit(X_train, y_train)
+
+    X_test = ['this class sucks.', 'Unauthorized egress from the Perimeter Zone is strictly forbidden .']
+    preds = net.predict(X_test)
+    predicted_labels = [label_dict_inv[p] for p in preds]
+    print(f'PREDICTION: {predicted_labels}')
 
 if __name__ == "__main__":
     main()
