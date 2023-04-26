@@ -19,6 +19,18 @@ initialize_session_vars({
 
 def update_displayed():
     text = st.session_state['text']
+    # preprocess their input: mask proper names
+    # results = <look up text in db>
+    # if results:
+    #       display result author w/ 100% confidence
+    # else:
+    #       get results from BERT
+    #       display result + distribution
+    #       ask the user if they want to enter the string into the db
+    #       if yes,
+    #           let them input author, date, dialect – with the model's top predictions as default
+    #           preprocess their input: mask proper names + normalize author name + year -> period
+    #           enter result into database
     st.session_state['result'] = text + "\n\n\nI FOUND THE AUTHOR!!!!!!\n\n\n" +\
         "AND THE DATE: !!!\n\n\n" +\
         "AND THE DIALECT"

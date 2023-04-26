@@ -114,7 +114,7 @@ def main(batch_size, max_epochs, predict_level, limit,
     # train the model
     net.fit(X_train, y_train)
 
-    X_test = ['this class sucks.', 'Unauthorized egress from the Perimeter Zone is strictly forbidden .']
+    X_test = ['this class sucks.', 'this sentence is written in british english for sure. british english for the win. this is written in 1800', 'Unauthorized egress from the Perimeter Zone is strictly forbidden .']
     preds = net.predict(X_test)
     predicted_labels = [label_dict_inv[p] for p in preds]
     print(f'PREDICTION: {predicted_labels}')
