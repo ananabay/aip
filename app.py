@@ -2,6 +2,10 @@ import sys, os
 import streamlit as st
 from PIL import Image
 
+from preprocess_data import mask_entities
+MASK = '<MASK>'
+from database import check_input_in_db, enter_to_db
+
 # dir_path = os.path.dirname(os.path.realpath(__file__))
 # sys.path.append(os.path.sep.join(dir_path.split(os.path.sep)[:-1]))
 
@@ -19,10 +23,21 @@ initialize_session_vars({
 
 def update_displayed():
     text = st.session_state['text']
+
     # preprocess their input: mask proper names
+    masked_input = mask_entities(text, MASK)
     # results = <look up text in db>
-    # if results:
-    #       display result author w/ 100% confidence
+    result = check_input_in_db(masked_input)
+
+    # display result author w/ 100% confidence
+    if result:
+        display_string = ''
+        for entry in result:
+            display_string += f"\nAuthor: {entry[3]}\n" +\
+                f"Book: {entry[2]}" +\
+                f"Time period: {entry[5]}\n" +\
+                f"Dialect: {entry[4]}\n\n"
+        st.session_state['result'] = display_string
     # else:
     #       get results from BERT
     #       display result + distribution
@@ -31,9 +46,7 @@ def update_displayed():
     #           let them input author, date, dialect – with the model's top predictions as default
     #           preprocess their input: mask proper names + normalize author name + year -> period
     #           enter result into database
-    st.session_state['result'] = text + "\n\n\nI FOUND THE AUTHOR!!!!!!\n\n\n" +\
-        "AND THE DATE: !!!\n\n\n" +\
-        "AND THE DIALECT"
+    
 
 def update_text_from_file():
     if st.session_state['uploaded_file']:

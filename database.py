@@ -48,9 +48,9 @@ def enter_to_db(paragraph, book, author, dialect, period):
     cursor.execute(
             "INSERT INTO paragraphs (paragraph, book, author, dialect, period) VALUES (?, ?, ?, ?, ?)", (paragraph, book, author, dialect, period))
     connection3.commit()
-    
+
 if __name__ == "__main__":
     # create_db_from_tsv(tsv_name)
-    input_text = ' we should give'
+    input_text = ' we should give it a go'
     lookup = check_input_in_db(input_text)
     print(lookup)
