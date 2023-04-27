@@ -33,9 +33,9 @@ def update_displayed():
     if result:
         display_string = ''
         for entry in result:
-            display_string += f"\nAuthor: {entry[3]}\n" +\
-                f"Book: {entry[2]}" +\
-                f"Time period: {entry[5]}\n" +\
+            display_string += f"\nYour quote showed up in these entries\nAuthor: {entry[3]};\n" +\
+                f"Book: {entry[2]};" +\
+                f"Time period: {entry[5]};" +\
                 f"Dialect: {entry[4]}\n\n"
         st.session_state['result'] = display_string
     # else:
