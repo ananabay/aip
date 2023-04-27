@@ -31,22 +31,36 @@ def update_displayed():
 
     # display result author w/ 100% confidence
     if result:
-        display_string = ''
+        display_string = 'Your quote showed up in these entries\n\n'
         for entry in result:
-            display_string += f"\nYour quote showed up in these entries\nAuthor: {entry[3]};\n" +\
+            display_string += f"\nAuthor: {entry[3]};\n" +\
                 f"Book: {entry[2]};" +\
                 f"Time period: {entry[5]};" +\
                 f"Dialect: {entry[4]}\n\n"
         st.session_state['result'] = display_string
-    # else:
-    #       get results from BERT
-    #       display result + distribution
+    else:
+        with col12:
+            st.write('Your quote matches no entry in our database.')
+    #   get results from BERT
+    #   display result + distribution
+        with col7:
+            entry_button = st.button('create new entry')
+        with col8:
+            author_input = st.text_input('enter author')
+        with col9:
+            book_input = st.text_input('enter book')
+        with col10:
+            year_input = st.text_input('enter year')
+        with col11:
+            dialect_input = st.text_input('enter dialect')
+
+
     #       ask the user if they want to enter the string into the db
     #       if yes,
     #           let them input author, date, dialect – with the model's top predictions as default
     #           preprocess their input: mask proper names + normalize author name + year -> period
     #           enter result into database
-    
+
 
 def update_text_from_file():
     if st.session_state['uploaded_file']:
@@ -82,7 +96,11 @@ with col2:
                     key='uploaded_file',
                     )
 
-col3, col4, col5 = st.columns([11, 3, 3])
+col3, col6, col4, col5 = st.columns([3, 8, 3, 3])
+
+col12, col13 = st.columns([1, 1])
+# columns for entering new entry into database
+col7, col8, col9, col10, col11 = st.columns([3, 3, 3, 3, 3])
 
 with col3:
     st.button('Submit', on_click=update_displayed)
