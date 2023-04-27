@@ -55,13 +55,6 @@ def update_displayed():
             dialect_input = st.text_input('enter dialect')
 
 
-    #       ask the user if they want to enter the string into the db
-    #       if yes,
-    #           let them input author, date, dialect – with the model's top predictions as default
-    #           preprocess their input: mask proper names + normalize author name + year -> period
-    #           enter result into database
-
-
 def update_text_from_file():
     if st.session_state['uploaded_file']:
         st.session_state['uploaded_text'] = st.session_state['uploaded_file'].getvalue().decode()
