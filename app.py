@@ -1,6 +1,7 @@
 import sys, os
 import streamlit as st
 from PIL import Image
+import math
 
 from preprocess_data import mask_entities
 MASK = '<MASK>'
@@ -9,7 +10,7 @@ from database import check_input_in_db, enter_to_db
 # dir_path = os.path.dirname(os.path.realpath(__file__))
 # sys.path.append(os.path.sep.join(dir_path.split(os.path.sep)[:-1]))
 
-text = "This is some example text with Yangyang and Ruth and Mr. Spongebob Squarepants and a 4th person in Boston on April 25th."
+text = ""
 
 def initialize_session_vars(vars):
     for key, val in vars.items():
@@ -18,42 +19,33 @@ def initialize_session_vars(vars):
 
 initialize_session_vars({
     'text' : text,
-    'result' : ''
+    'result' : '',
+    'author': '',
+    'year': '',
+    'book title': '',
+    'dialect': ''
 })
 
 def update_displayed():
     text = st.session_state['text']
-
     # preprocess their input: mask proper names
     masked_input = mask_entities(text, MASK)
     # results = <look up text in db>
     result = check_input_in_db(masked_input)
-
     # display result author w/ 100% confidence
     if result:
         display_string = 'Your quote showed up in these entries\n\n'
         for entry in result:
-            display_string += f"\nAuthor: {entry[3]};\n" +\
-                f"Book: {entry[2]};" +\
-                f"Time period: {entry[5]};" +\
-                f"Dialect: {entry[4]}\n\n"
+            display_string += f"\n\tAuthor: {entry[3]}" +\
+                f"\n\tBook: {entry[2]}" +\
+                f"\n\tTime period: {entry[5]}" +\
+                f"\n\tDialect: {entry[4]}\n\n"
         st.session_state['result'] = display_string
     else:
-        with col12:
-            st.write('Your quote matches no entry in our database.')
+        st.session_state['result'] = 'Your quote matches no entry in our database.\n\nTo create a new entry, '+\
+                        'fill out the fields below and click submit:'
     #   get results from BERT
     #   display result + distribution
-        with col7:
-            entry_button = st.button('create new entry')
-        with col8:
-            author_input = st.text_input('enter author')
-        with col9:
-            book_input = st.text_input('enter book')
-        with col10:
-            year_input = st.text_input('enter year')
-        with col11:
-            dialect_input = st.text_input('enter dialect')
-
 
 def update_text_from_file():
     if st.session_state['uploaded_file']:
@@ -71,7 +63,6 @@ with colH:
 with colIm:
     image = Image.open('monkeys.png')
     st.image(image, caption='Our ananabay team members!')
-
 
 col1, col2 = st.columns([8, 6])
 
@@ -93,7 +84,6 @@ col3, col6, col4, col5 = st.columns([3, 8, 3, 3])
 
 col12, col13 = st.columns([1, 1])
 # columns for entering new entry into database
-col7, col8, col9, col10, col11 = st.columns([3, 3, 3, 3, 3])
 
 with col3:
     st.button('Submit', on_click=update_displayed)
@@ -103,3 +93,28 @@ with col5:
     st.button('fun 🎈', on_click=st.balloons)
 
 st.markdown(st.session_state["result"])
+
+def add_entry_to_db():
+    text = st.session_state['text']
+    masked_input = mask_entities(text, MASK)
+    year = int(st.session_state['year'])
+    start = math.floor(year/50)*50
+    end = (math.floor(year/50)+1)*50 if (math.floor(year/50)+1)*50<2023 else "present"
+    period = f'{start}-{end}'
+    enter_to_db(masked_input, st.session_state['book'], st.session_state['author'], st.session_state['dialect'], period)
+
+container = st.empty()
+if st.session_state['result'] == 'Your quote matches no entry in our database.\n\nTo create a new entry, '+\
+                        'fill out the fields below and click submit:':
+    with container:
+        col8, col9, col10, col11, col12 = st.columns([3, 3, 3, 3, 3])
+        with col8:
+            author_input = st.text_input('author', key='author')
+        with col9:
+            book_input = st.text_input('book', key='book')
+        with col10:
+            year_input = st.text_input('year', key='year')
+        with col11:
+            dialect_input = st.text_input('dialect', key='dialect')
+        with col12:
+            submit_new_entry_button = st.button('submit', on_click=add_entry_to_db)
