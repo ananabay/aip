@@ -26,6 +26,9 @@ initialize_session_vars({
     'dialect': ''
 })
 
+no_match_text = 'Your quote matches no entry in our database.\n\n[BERT prediction will appear here]\n\nTo create a new entry, '+\
+                        'fill out the fields below and click submit:'
+
 def update_displayed():
     text = st.session_state['text']
     # preprocess their input: mask proper names
@@ -42,10 +45,11 @@ def update_displayed():
                 f"\n\tDialect: {entry[4]}\n\n"
         st.session_state['result'] = display_string
     else:
-        st.session_state['result'] = 'Your quote matches no entry in our database.\n\nTo create a new entry, '+\
-                        'fill out the fields below and click submit:'
+        st.session_state['result'] = no_match_text
     #   get results from BERT
     #   display result + distribution
+
+st.set_page_config(layout="wide")
 
 def update_text_from_file():
     if st.session_state['uploaded_file']:
@@ -55,16 +59,16 @@ def update_text_from_file():
 def update_text_from_input():
     st.session_state['text'] = st.session_state['input_text']
 
-colH, colIm = st.columns([8,5])
+colH, colIm = st.columns([10,3])
 
 with colH:
-    st.header('Author Identification Project\n(AIP)')
+    st.header('Author Identification Project\n(AIP 🐵)')
 
 with colIm:
     image = Image.open('monkeys.png')
     st.image(image, caption='Our ananabay team members!')
 
-col1, col2 = st.columns([8, 6])
+col1, col2 = st.columns([11, 5])
 
 with col1:
     st.text_area('Input some text:', 
@@ -80,7 +84,7 @@ with col2:
                     key='uploaded_file',
                     )
 
-col3, col6, col4, col5 = st.columns([3, 8, 3, 3])
+col3, col6, col4, col5 = st.columns([4, 10, 2, 2])
 
 col12, col13 = st.columns([1, 1])
 # columns for entering new entry into database
@@ -104,8 +108,7 @@ def add_entry_to_db():
     enter_to_db(masked_input, st.session_state['book'], st.session_state['author'], st.session_state['dialect'], period)
 
 container = st.empty()
-if st.session_state['result'] == 'Your quote matches no entry in our database.\n\nTo create a new entry, '+\
-                        'fill out the fields below and click submit:':
+if st.session_state['result'] == no_match_text:
     with container:
         col8, col9, col10, col11, col12 = st.columns([3, 3, 3, 3, 3])
         with col8:
