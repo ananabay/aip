@@ -23,6 +23,7 @@ def get_X_y_from_file(filename, label_column=3, label_dict=None, limit=None):
     y = []
     with open(filename, 'r') as f:
         tsv_reader = csv.reader(f, delimiter="\t")
+        next(tsv_reader)
         if limit:
             subsample = sorted(list(tsv_reader), key=lambda k: random.random())[:limit]
         else:
