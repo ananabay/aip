@@ -1,3 +1,7 @@
+'''
+preprocess_data.py contains methods for processing raw book data into all_data_masked.tsv for training
+'''
+
 import os
 import click
 import string
@@ -11,9 +15,12 @@ MASK = '<MASK>'
 IGNORE_CHARS = '0123456789' + string.punctuation
 ENTITIES_TO_MASK = ['PERSON']
 
+
+# mask entities within a text to remove special character names etc. exclusive to some books
 def mask_entities(text, mask):
     doc = nlp(text)
     return " ".join([mask if t.ent_type_ and t.ent_type_ in ENTITIES_TO_MASK else t.text for t in doc])
+
 
 def preprocess_file(filename, out_file, mask_ner, dialect, period, author):
     book_title = filename.split('-')[-1].strip().replace('.txt','')
@@ -32,6 +39,7 @@ def preprocess_file(filename, out_file, mask_ner, dialect, period, author):
                 par = mask_entities(par, MASK)
             if par.strip().translate(dict([(c, '') for c in IGNORE_CHARS])) and len(par.strip())>10:
                 writer.writerow([par, dialect, period, author, book_title])
+
 
 @click.command()
 @click.option("--input-file", type=click.Path(readable=True), required=True, help='path for input .txt file or directory of files')

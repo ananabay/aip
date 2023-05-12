@@ -1,9 +1,14 @@
+'''
+database.py contains function for writing to and reading from a sqlite db
+'''
 import sqlite3
 import csv 
 import sys
 
+# establish connection with sqlite db
 connection = sqlite3.connect('aip.db')
 cursor = connection.cursor()
+# create sqlite table for storing paragraphs, authors, book, dialect, time period
 cursor.execute('''CREATE TABLE IF NOT EXISTS paragraphs (
     id INTEGER PRIMARY KEY,
     paragraph TEXT, 
@@ -12,8 +17,9 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS paragraphs (
     dialect TEXT, 
     period TEXT)''')
 
-tsv_name = 'data/preprocessed/all_data_masked.tsv'
 
+# path to preprocessed training data all_data_masked.tsv
+tsv_name = 'data/preprocessed/all_data_masked.tsv'
 csv.field_size_limit(sys.maxsize)
 
 # enter all_data_masked.tsv to sqlite db
@@ -29,7 +35,8 @@ def create_db_from_tsv(tsv_name):
             "INSERT INTO paragraphs (paragraph, book, author, dialect, period) VALUES (?, ?, ?, ?, ?)", (paragraph, book, author, dialect, period))
     connection1.commit()
 
-# given a string, look it up in sqlite db
+
+# given a text string, look it up in sqlite db and return matching entries
 def check_input_in_db(input_text):
     connection2 = sqlite3.connect('aip.db')
     cursor = connection2.cursor()
@@ -40,6 +47,7 @@ def check_input_in_db(input_text):
 
     return result
 
+
 # given an entry (text string, author, date, dialect), enter it into sqlite db
 def enter_to_db(paragraph, book, author, dialect, period):
     connection3 = sqlite3.connect('aip.db')
@@ -48,6 +56,7 @@ def enter_to_db(paragraph, book, author, dialect, period):
     cursor.execute(
             "INSERT INTO paragraphs (paragraph, book, author, dialect, period) VALUES (?, ?, ?, ?, ?)", (paragraph, book, author, dialect, period))
     connection3.commit()
+
 
 if __name__ == "__main__":
     # create_db_from_tsv(tsv_name)

@@ -8,6 +8,7 @@ from database import check_input_in_db, enter_to_db
 from load_checkpoints import load_model
 
 
+# load finetuned bert models for author, dialect and time period prediction
 author_loaded = load_model('author')
 dialect_loaded = load_model('dialect')
 period_loaded = load_model('period')
