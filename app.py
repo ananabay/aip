@@ -133,7 +133,7 @@ def add_entry_to_db():
     enter_to_db(masked_input, st.session_state['book'], st.session_state['author'], st.session_state['dialect'], period)
 
 container = st.empty()
-if st.session_state['result'] == no_match_text:
+if 'matches no entry in our database' in st.session_state['result']:
     with container:
         col8, col9, col10, col11, col12 = st.columns([3, 3, 3, 3, 3])
         with col8:
