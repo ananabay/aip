@@ -1,11 +1,16 @@
-import sys, os
 import streamlit as st
 from PIL import Image
-import math
+import math, torch 
 
 from preprocess_data import mask_entities
 MASK = '<MASK>'
 from database import check_input_in_db, enter_to_db
+from load_checkpoints import load_model
+
+
+author_loaded = load_model('author')
+dialect_loaded = load_model('dialect')
+period_loaded = load_model('period')
 
 # dir_path = os.path.dirname(os.path.realpath(__file__))
 # sys.path.append(os.path.sep.join(dir_path.split(os.path.sep)[:-1]))
@@ -26,8 +31,26 @@ initialize_session_vars({
     'dialect': ''
 })
 
-no_match_text = 'Your quote matches no entry in our database.\n\n[BERT prediction will appear here]\n\nTo create a new entry, '+\
-                        'fill out the fields below and click submit:'
+no_match_text = ''
+
+def predict(text):
+    predictions = {}
+
+    for loaded in [author_loaded, dialect_loaded, period_loaded]:
+
+        tokens = loaded[1].encode_plus(
+                text,
+                padding="max_length",
+                truncation=True,
+                return_tensors="pt"  # Returns PyTorch tensors
+                )
+        outputs = loaded[0](**tokens)
+        pred = torch.argmax(outputs.logits)
+        prediction = loaded[2][int(pred)]
+
+        predictions[loaded[3]] = prediction
+    
+    return predictions 
 
 def update_displayed():
     text = st.session_state['text']
@@ -45,9 +68,11 @@ def update_displayed():
                 f"\n\tDialect: {entry[4]}\n\n"
         st.session_state['result'] = display_string
     else:
+        predictions = predict(text)
+        no_match_text = f'Your quote matches no entry in our database.\n\n{predictions}\n\nTo create a new entry, '+\
+                        'fill out the fields below and click submit:'
         st.session_state['result'] = no_match_text
-    #   get results from BERT
-    #   display result + distribution
+
 
 st.set_page_config(layout="wide")
 

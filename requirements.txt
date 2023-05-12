@@ -6,3 +6,5 @@ spacy==3.5.2
 torch==2.0.0
 tqdm==4.64.1
 transformers==4.28.1
+https://github.com/explosion/spacy-models/releases/download/en_core_web_lg-3.5.0/en_core_web_lg-3.5.0-py3-none-any.whl
+
