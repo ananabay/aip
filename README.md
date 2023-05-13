@@ -1,6 +1,6 @@
 # Author Identification Project (AIP)
 
-## How to run my code
+## How to run our code
 
 ### Requirements
 I used Python 3.9.6, so my code is set up to work with this version.
