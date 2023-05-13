@@ -3,7 +3,7 @@
 ## How to run our code
 
 ### Requirements
-We used Python 3.9.6, so my code is set up to work with this version.
+We used Python 3.9.6, so our code is set up to work with this version.
 The required modules are listed in `requirements.txt`, and can be installed by running the command `pip install -r requirements.txt`.
 
 ### Flask web server
