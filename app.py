@@ -7,6 +7,7 @@ MASK = '<MASK>'
 from database import check_input_in_db, enter_to_db
 from load_checkpoints import load_model
 
+st.set_page_config(layout="wide")
 
 # load finetuned bert models for author, dialect and time period prediction
 author_loaded = load_model('author')
@@ -32,13 +33,12 @@ initialize_session_vars({
     'dialect': ''
 })
 
-no_match_text = ''
+no_match_text = ""
 
+# This function takes a text input and predicts its author from the loaded models.
 def predict(text):
     predictions = {}
-
     for loaded in [author_loaded, dialect_loaded, period_loaded]:
-
         tokens = loaded[1].encode_plus(
                 text,
                 padding="max_length",
@@ -48,11 +48,11 @@ def predict(text):
         outputs = loaded[0](**tokens)
         pred = torch.argmax(outputs.logits)
         prediction = loaded[2][int(pred)]
-
         predictions[loaded[3]] = prediction
-    
     return predictions 
 
+# this function updates the displayed text, either with the results from the database lookup 
+# or with the results from the BERT model
 def update_displayed():
     text = st.session_state['text']
     # preprocess their input: mask proper names
@@ -70,13 +70,15 @@ def update_displayed():
         st.session_state['result'] = display_string
     else:
         predictions = predict(text)
-        no_match_text = f'Your quote matches no entry in our database.\n\n{predictions}\n\nTo create a new entry, '+\
-                        'fill out the fields below and click submit:'
+        no_match_text = f'Your quote matches no entry in our database. Our model predicted the following results:\n\n'
+        no_match_text += f"\n\tAuthor: {predictions['author']}" +\
+                f"\n\tTime period: {predictions['period']}" +\
+                f"\n\tDialect: {predictions['dialect']}\n\n"
+        no_match_text += '\n\nTo create a new entry, fill out the fields below and click submit:'
         st.session_state['result'] = no_match_text
 
 
-st.set_page_config(layout="wide")
-
+# reads text from upload .txt file
 def update_text_from_file():
     if st.session_state['uploaded_file']:
         st.session_state['uploaded_text'] = st.session_state['uploaded_file'].getvalue().decode()
@@ -124,6 +126,7 @@ with col5:
 
 st.markdown(st.session_state["result"])
 
+# adds the user's input text as a document into the database
 def add_entry_to_db():
     text = st.session_state['text']
     masked_input = mask_entities(text, MASK)
