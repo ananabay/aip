@@ -7,10 +7,14 @@ We used Python 3.9.6, so our code is set up to work with this version.
 The required modules are listed in `requirements.txt`, and can be installed by running the command `pip install -r requirements.txt`.
 
 ### Streamlit app
+
+**Note:** The first time the app is launched, it may take some time (around 30 seconds) to load because it has to download our BERT model which is relatively large.
+
 To run our Streamlit app directly on your computer, `cd` into the root directory (`aip/`) and run the following command: 
 ```bash
 $ python3 -m streamlit run app.py
 ```
+
 Then, go to [http://localhost:8501](http://localhost:8501/) in a browser to access the website and use the text area to input text, or the file upload button to upload a .txt file. Click the submit button to process the text and view the results. 
 If your text was an exact match to a text in our database, the matcehed book(s) will be displayed. Otherwise, a prediction made by our classification model will be displayed, along with an option to add the entry to our database (so that next time it is searched, it will be an exact match).
 
